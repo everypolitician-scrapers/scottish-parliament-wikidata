@@ -3,6 +3,7 @@
 
 require 'scraperwiki'
 require 'wikidata/fetcher'
+require 'rest-client'
 
 @pages = [
   'Category:Members of the Scottish Parliament 1999–2003',
@@ -15,3 +16,6 @@ require 'wikidata/fetcher'
   data = WikiData::Fetcher.new(id: id).data or next
   ScraperWiki.save_sqlite([:id], data)
 end
+
+warn RestClient.post ENV['MORPH_REBUILDER_URL'], {} if ENV['MORPH_REBUILDER_URL']
+
