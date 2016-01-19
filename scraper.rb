@@ -1,21 +1,15 @@
 #!/bin/env ruby
 # encoding: utf-8
 
-require 'scraperwiki'
 require 'wikidata/fetcher'
-require 'rest-client'
 
-@pages = [
+pages = [
   'Category:Members of the Scottish Parliament 1999–2003',
   'Category:Members of the Scottish Parliament 2003–07',
   'Category:Members of the Scottish Parliament 2007–11',
   'Category:Members of the Scottish Parliament 2011–',
 ]
+names = pages.map { |url| WikiData::Category.new(url, 'en').member_titles }.flatten.uniq
 
-@pages.map { |c| WikiData::Category.new(c).wikidata_ids }.flatten.uniq.each do |id|
-  data = WikiData::Fetcher.new(id: id).data or next
-  ScraperWiki.save_sqlite([:id], data)
-end
-
-warn RestClient.post ENV['MORPH_REBUILDER_URL'], {} if ENV['MORPH_REBUILDER_URL']
-
+EveryPolitician::Wikidata.scrape_wikidata(names: { en: names })
+warn EveryPolitician::Wikidata.notify_rebuilder
