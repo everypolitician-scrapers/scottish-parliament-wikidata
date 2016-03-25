@@ -12,4 +12,3 @@ pages = [
 names = pages.map { |url| WikiData::Category.new(url, 'en').member_titles }.flatten.uniq
 
 EveryPolitician::Wikidata.scrape_wikidata(names: { en: names })
-warn EveryPolitician::Wikidata.notify_rebuilder
